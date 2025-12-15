@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrepPal - AI Study Companion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --primary: #8b5cf6;
+            --primary-hover: #7c3aed;
+            --secondary: #3b82f6;
+            --accent: #10b981;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image:
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.15) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Utilities */
+        .hidden {
+            display: none !important;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .flex-col {
+            flex-direction: column;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-center {
+            justify-content: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .gap-2 {
+            gap: 0.5rem;
+        }
+
+        .gap-4 {
+            gap: 1rem;
+        }
+
+        .gap-6 {
+            gap: 1.5rem;
+        }
+
+        .w-full {
+            width: 100%;
+        }
+
+        .p-4 {
+            padding: 1rem;
+        }
+
+        .p-6 {
+            padding: 1.5rem;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        .mt-4 {
+            margin-top: 1rem;
+        }
+
+        .relative {
+            position: relative;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        p {
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        small {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            width: 100%;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(139, 92, 246, 0.3);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            box-shadow: none;
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--primary);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger) 0%, #b91c1c 100%);
+        }
+
+        .btn-icon-only {
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+        }
+
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.9rem;
+        }
+
+        .glass-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1.5rem;
+            box-shadow: var(--glass-shadow);
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+
+        label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        input,
+        select {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--glass-border);
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
+            width: 100%;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--primary);
+        }
+
+        /* Auth Screen */
+        .auth-container {
+            max-width: 400px;
+            margin: 10vh auto;
+            text-align: center;
+        }
+
+        .toggle-auth {
+            color: var(--primary);
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 0.9rem;
+        }
+
+        /* Dashboard Layout */
+        .dashboard-wrapper {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 2rem;
+            min-height: 80vh;
+        }
+
+        @media(max-width: 800px) {
+            .dashboard-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-menu {
+                display: flex;
+                overflow-x: auto;
+                gap: 1rem;
+                padding-bottom: 1rem;
+            }
+        }
+
+        /* Nav */
+        .nav-item {
+            padding: 1rem;
+            cursor: pointer;
+            border-radius: 1rem;
+            transition: background 0.2s;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            display: flex;
+            items-center;
+            gap: 0.8rem;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: rgba(139, 92, 246, 0.1);
+            color: var(--primary);
+        }
+
+        /* Timetable Grid */
+        .timetable-container {
+            overflow-x: auto;
+        }
+
+        /* 6 DAYS (Mon-Sat) */
+        .timetable-grid {
+            display: grid;
+            grid-template-columns: 50px 100px repeat(6, minmax(130px, 1fr));
+            gap: 1px;
+            background: var(--glass-border);
+            border-radius: 1rem;
+            min-width: 850px;
+        }
+
+        .timetable-head {
+            background: rgba(30, 41, 59, 0.9);
+            padding: 1rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .timetable-cell {
+            background: rgba(30, 41, 59, 0.5);
+            padding: 0.5rem;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 0.9rem;
+            position: relative;
+        }
+
+        .timetable-cell:hover {
+            background: rgba(30, 41, 59, 0.8);
+        }
+
+        .cell-input {
+            position: absolute;
+            inset: 0;
+            background: transparent;
+            border: none;
+            text-align: center;
+            color: white;
+            width: 100%;
+            height: 100%;
+            padding: 0.5rem;
+        }
+
+        .cell-action {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--danger);
+            opacity: 0.5;
+            transition: opacity 0.2s;
+            font-size: 1.2rem;
+        }
+
+        .cell-action:hover {
+            opacity: 1;
+        }
+
+        /* Timeline */
+        .time-block {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        .time-left {
+            min-width: 80px;
+            text-align: right;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            padding-top: 1rem;
+        }
+
+        .time-card {
+            flex: 1;
+            background: rgba(30, 41, 59, 0.4);
+            padding: 1rem;
+            border-radius: 1rem;
+            border: 1px solid var(--glass-border);
+            position: relative;
+        }
+
+        .time-card.study {
+            border-left: 4px solid var(--primary);
+        }
+
+        .time-card.school {
+            border-left: 4px solid var(--secondary);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .time-card.break {
+            border-left: 4px solid var(--accent);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            padding: 2rem;
+            border-radius: 1rem;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .tag {
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- AUTH SECTION -->
+    <section id="auth-section" class="container">
+        <div class="auth-container glass-card p-6">
+            <h1>PrepPal</h1>
+            <p class="mb-4">Your AI Study Companion</p>
+
+            <div id="login-form">
+                <div class="input-group">
+                    <input type="text" id="login-username" placeholder="Username">
+                </div>
+                <div class="input-group">
+                    <input type="password" id="login-password" placeholder="Password">
+                </div>
+                <button class="btn w-full mb-4" onclick="auth.login()">Log In</button>
+                <p>New here? <span class="toggle-auth" onclick="auth.toggleView('signup')">Create Account</span></p>
+            </div>
+
+            <div id="signup-form" class="hidden">
+                <div class="input-group">
+                    <input type="text" id="signup-username" placeholder="Choose Username">
+                </div>
+                <div class="input-group">
+                    <input type="password" id="signup-password" placeholder="Choose Password">
+                </div>
+                <button class="btn w-full mb-4" onclick="auth.signup()">Sign Up</button>
+                <p>Already have an account? <span class="toggle-auth" onclick="auth.toggleView('login')">Log In</span>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- DASHBOARD SECTION -->
+    <section id="app-section" class="container hidden">
+        <header class="flex justify-between items-center mb-4">
+            <div class="flex items-center gap-4">
+                <h1>PrepPal</h1>
+                <span class="tag" id="user-display">Student</span>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="auth.logout()">Log Out</button>
+        </header>
+
+        <div class="dashboard-wrapper">
+            <!-- NAV SIDEBAR -->
+            <nav class="nav-menu glass-card p-4 h-full">
+                <div class="nav-item active" onclick="ui.switchTab('home')">Daily Plan</div>
+                <div class="nav-item" onclick="ui.switchTab('school')">School Timetable</div>
+                <div class="nav-item" onclick="ui.switchTab('subjects')">Subjects & Exams</div>
+                <div class="nav-item" onclick="ui.switchTab('settings')">Settings</div>
+            </nav>
+
+            <!-- CONTENT AREA -->
+            <main id="content-area">
+
+                <!-- TAB: HOME / DAILY -->
+                <div id="tab-home" class="tab-content">
+                    <div class="glass-card p-6 mb-4">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h2>Today's Schedule</h2>
+                                <p id="current-date">Fetching...</p>
+                            </div>
+                            <button class="btn btn-sm" onclick="app.regenerateSchedule()">Refresh Plan</button>
+                        </div>
+                        <div class="mt-4">
+                            <small class="block mb-2">Daily Progress</small>
+                            <div
+                                style="background: rgba(255,255,255,0.1); height:8px; border-radius:4px; overflow:hidden;">
+                                <div id="progress-bar"
+                                    style="width: 0%; height:100%; background: var(--accent); transition: width 0.5s;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="daily-timeline">
+                        <!-- Dynamic -->
+                    </div>
+                </div>
+
+                <!-- TAB: SCHOOL TIMETABLE -->
+                <div id="tab-school" class="tab-content hidden">
+                    <div class="glass-card p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2>School Timetable</h2>
+                            <button class="btn btn-sm btn-danger" onclick="app.clearTimetable()">Clear All</button>
+                        </div>
+                        <p class="mb-4">Click any cell to edit. Use the sidebar to add or remove specific periods.</p>
+
+                        <div class="timetable-container">
+                            <div class="timetable-grid" id="school-grid">
+                                <!-- Rows injected by JS -->
+                            </div>
+                        </div>
+
+                        <div class="flex gap-4 mt-6">
+                            <button class="btn btn-outline btn-sm" onclick="app.addSchoolRow('Period')">+ Add
+                                Period</button>
+                            <button class="btn btn-outline btn-sm" onclick="app.addSchoolRow('Lunch')">+ Add
+                                Lunch/Break</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: SUBJECTS -->
+                <div id="tab-subjects" class="tab-content hidden">
+                    <div class="glass-card p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2>Subjects & Exams</h2>
+                            <button class="btn btn-sm" onclick="ui.showAddSubjectModal()">+ Add Subject</button>
+                        </div>
+                        <div id="subjects-list" class="flex flex-col gap-2"></div>
+                    </div>
+                </div>
+
+                <!-- TAB: SETTINGS -->
+                <div id="tab-settings" class="tab-content hidden">
+                    <div class="glass-card p-6" style="max-width: 600px;">
+                        <h2>Settings & Availability</h2>
+                        <p class="mb-4">Adjust your daily routine constraints here.</p>
+
+                        <div class="input-group">
+                            <label>School Start Time</label>
+                            <input type="time" id="set-school-start" onchange="app.updateConfig()">
+                        </div>
+                        <div class="input-group">
+                            <label>School End Time</label>
+                            <input type="time" id="set-school-end" onchange="app.updateConfig()">
+                        </div>
+                        <div class="input-group">
+                            <label>Home Study Start Time (After School)</label>
+                            <input type="time" id="set-study-start" onchange="app.updateConfig()">
+                        </div>
+                        <div class="input-group">
+                            <label>Bedtime</label>
+                            <input type="time" id="set-bed-time" onchange="app.updateConfig()">
+                        </div>
+                        <div class="input-group">
+                            <label>Wind Down Period Before Bed (Minutes)</label>
+                            <input type="number" id="set-wind-down" value="60" min="0" max="180"
+                                onchange="app.updateConfig()">
+                            <small style="margin-top:-0.4rem; display:block; color:var(--text-muted)">Time to relax
+                                before sleep. No studying during this time.</small>
+                        </div>
+                        <div class="input-group">
+                            <label>Study Session Duration (Minutes)</label>
+                            <input type="number" id="set-study-duration" value="50" min="15" max="120"
+                                onchange="app.updateConfig()">
+                        </div>
+
+                        <div class="mt-4 p-4 rounded-xl"
+                            style="background: rgba(139, 92, 246, 0.1); border: 1px solid var(--primary);">
+                            <small>Note: PrepPal uses these times to automatically generate your home study
+                                plan.</small>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </section>
+
+    <!-- Generic Modal -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modal-title" class="mb-4">Modal</h3>
+            <div id="modal-body"></div>
+            <div class="flex justify-end gap-2 mt-4">
+                <button class="btn btn-outline" onclick="ui.closeModal()">Cancel</button>
+                <button class="btn" id="modal-confirm-btn">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- SERVICES ---
+        const Utils = {
+            id: () => Math.random().toString(36).substr(2, 9),
+            getToday: () => new Date().toISOString().split('T')[0],
+            formatTime: (str) => {
+                if (!str) return '--:--';
+                const [h, m] = str.split(':').map(Number);
+                const ampm = h >= 12 ? 'PM' : 'AM';
+                return `${h % 12 || 12}:${m.toString().padStart(2, '0')} ${ampm}`;
+            },
+            minToTime: (m) => {
+                const h = Math.floor(m / 60);
+                const min = m % 60;
+                return `${h.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`;
+            },
+            timeToMin: (s) => {
+                const [h, m] = s.split(':').map(Number);
+                return h * 60 + m;
+            }
+        };
+
+        const Storage = {
+            getUsers: () => JSON.parse(localStorage.getItem('athena_users') || '{}'),
+            saveUsers: (users) => localStorage.setItem('athena_users', JSON.stringify(users)),
+        };
+
+        // --- AUTH ---
+        let currentUser = null; // { username, data: { config, subjects, schoolSchedule, plans } }
+
+        const auth = {
+            init: () => {
+                const session = sessionStorage.getItem('athena_session');
+                if (session) {
+                    const users = Storage.getUsers();
+                    if (users[session]) {
+                        auth.loadUser(session, users[session]);
+                        return;
+                    }
+                }
+                document.getElementById('auth-section').classList.remove('hidden');
+            },
+
+            toggleView: (view) => {
+                if (view === 'signup') {
+                    document.getElementById('login-form').classList.add('hidden');
+                    document.getElementById('signup-form').classList.remove('hidden');
+                } else {
+                    document.getElementById('signup-form').classList.add('hidden');
+                    document.getElementById('login-form').classList.remove('hidden');
+                }
+            },
+
+            signup: () => {
+                const u = document.getElementById('signup-username').value.trim();
+                const p = document.getElementById('signup-password').value;
+                if (!u || !p) return alert("Please fill all fields");
+
+                const users = Storage.getUsers();
+                if (users[u]) return alert("Username taken");
+
+                // Default Data
+                users[u] = {
+                    password: p,
+                    data: {
+                        config: {
+                            schoolStart: "08:00",
+                            schoolEnd: "15:00",
+                            studyStart: "17:00",
+                            bedTime: "22:00",
+                            studyDuration: 50,
+                            windDown: 60 // Default
+                        },
+                        subjects: [],
+                        schoolSchedule: [
+                            { label: "Period 1", days: ["", "", "", "", "", ""] },
+                            { label: "Period 2", days: ["", "", "", "", "", ""] },
+                            { label: "Period 3", days: ["", "", "", "", "", ""] },
+                            { label: "Lunch", days: ["", "", "", "", "", ""] },
+                            { label: "Period 4", days: ["", "", "", "", "", ""] },
+                        ],
+                        plans: {}
+                    }
+                };
+                Storage.saveUsers(users);
+                auth.loadUser(u, users[u]);
+            },
+
+            login: () => {
+                const u = document.getElementById('login-username').value.trim();
+                const p = document.getElementById('login-password').value;
+                const users = Storage.getUsers();
+
+                if (users[u] && users[u].password === p) {
+                    auth.loadUser(u, users[u]);
+                } else {
+                    alert("Invalid credentials");
+                }
+            },
+
+            loadUser: (username, userObj) => {
+                // Migration
+                if (Array.isArray(userObj.data.schoolSchedule)) {
+                    // Check if first item is array (old format) or object (new format)
+                    if (userObj.data.schoolSchedule.length > 0 && Array.isArray(userObj.data.schoolSchedule[0])) {
+                        userObj.data.schoolSchedule = userObj.data.schoolSchedule.map((row, i) => ({
+                            label: (i === 3) ? 'Lunch' : `Period ${i + 1}`,
+                            days: row
+                        }));
+                    }
+                    // DATA PAD to 6 Days if needed
+                    userObj.data.schoolSchedule.forEach(row => {
+                        while (row.days.length < 6) row.days.push("");
+                    });
+                }
+                if (!userObj.data.config.studyDuration) userObj.data.config.studyDuration = 50;
+                if (userObj.data.config.windDown === undefined) userObj.data.config.windDown = 60;
+
+                currentUser = { username, ...userObj };
+                sessionStorage.setItem('athena_session', username);
+
+                document.getElementById('auth-section').classList.add('hidden');
+                document.getElementById('app-section').classList.remove('hidden');
+                document.getElementById('user-display').innerText = username;
+
+                // Initialize App Data
+                app.init();
+            },
+
+            logout: () => {
+                sessionStorage.removeItem('athena_session');
+                location.reload();
+            }
+        };
+
+        // --- APP CONTROLLER ---
+        const app = {
+            init: () => {
+                // Populate Settings Inputs
+                const c = currentUser.data.config;
+                document.getElementById('set-school-start').value = c.schoolStart;
+                document.getElementById('set-school-end').value = c.schoolEnd;
+                document.getElementById('set-study-start').value = c.studyStart;
+                document.getElementById('set-bed-time').value = c.bedTime;
+                document.getElementById('set-study-duration').value = c.studyDuration || 50;
+                document.getElementById('set-wind-down').value = c.windDown || 60;
+
+                // Load Initial Views
+                ui.renderSubjects();
+                ui.renderSchoolGrid();
+                app.loadDailyPlan();
+
+                document.getElementById('current-date').innerText = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+            },
+
+            saveData: () => {
+                const users = Storage.getUsers();
+                users[currentUser.username].data = currentUser.data;
+                Storage.saveUsers(users);
+            },
+
+            updateConfig: () => {
+                const c = currentUser.data.config;
+                const getVal = (id) => document.getElementById(id).value;
+
+                c.schoolStart = getVal('set-school-start');
+                c.schoolEnd = getVal('set-school-end');
+                c.studyStart = getVal('set-study-start');
+                c.bedTime = getVal('set-bed-time');
+                c.studyDuration = parseInt(getVal('set-study-duration')) || 50;
+                c.windDown = parseInt(getVal('set-wind-down')) || 0;
+
+                app.saveData();
+                app.regenerateSchedule(); // Auto refresh plan if times change
+            },
+
+            addSubject: (name, date, prio) => {
+                currentUser.data.subjects.push({
+                    id: Utils.id(),
+                    name,
+                    examDate: date,
+                    priority: prio
+                });
+                app.saveData();
+                ui.renderSubjects();
+                app.regenerateSchedule();
+            },
+
+            deleteSubject: (id) => {
+                currentUser.data.subjects = currentUser.data.subjects.filter(s => s.id !== id);
+                app.saveData();
+                ui.renderSubjects();
+            },
+
+            // --- SCHOOL TIMETABLE ACTIONS ---
+            updateSchoolCell: (rowIdx, dayIdx, value) => {
+                currentUser.data.schoolSchedule[rowIdx].days[dayIdx] = value;
+                app.saveData();
+            },
+
+            updateSchoolLabel: (rowIdx, value) => {
+                currentUser.data.schoolSchedule[rowIdx].label = value;
+                app.saveData();
+            },
+
+            addSchoolRow: (type) => {
+                let label = type === 'Lunch' ? 'Lunch' : `Period ${currentUser.data.schoolSchedule.length + 1}`;
+                currentUser.data.schoolSchedule.push({
+                    label: label,
+                    days: ["", "", "", "", "", ""] // 6 Days
+                });
+                app.saveData();
+                ui.renderSchoolGrid();
+            },
+
+            deleteSchoolRow: (idx) => {
+                currentUser.data.schoolSchedule.splice(idx, 1);
+                app.saveData();
+                ui.renderSchoolGrid();
+            },
+
+            clearTimetable: () => {
+                if (confirm("Are you sure you want to clear the entire timetable?")) {
+                    currentUser.data.schoolSchedule = [];
+                    app.saveData();
+                    ui.renderSchoolGrid();
+                }
+            },
+
+            regenerateSchedule: () => {
+                const today = Utils.getToday();
+                // Logic:
+                // 1. School Block
+                // 2. Home Study Blocks (Equal Time)
+
+                const conf = currentUser.data.config;
+                const newPlan = [];
+
+                // School Block
+                newPlan.push({
+                    type: 'school',
+                    start: conf.schoolStart,
+                    end: conf.schoolEnd,
+                    title: 'School',
+                    completed: true
+                });
+
+                // Study Logic
+                const startM = Utils.timeToMin(conf.studyStart);
+                const bedM = Utils.timeToMin(conf.bedTime);
+                const windDown = conf.windDown || 0;
+                const endM = bedM - windDown; // Stop studying before sleep
+
+                let currM = startM;
+                const BLOCK_SIZE = conf.studyDuration || 50;
+
+                const subjects = currentUser.data.subjects;
+                // EQUAL PRIORITY / ROUND ROBIN (A, B, C, A, B, C...)
+                let poolIdx = 0;
+
+                while (currM + BLOCK_SIZE <= endM && subjects.length > 0) {
+                    const sub = subjects[poolIdx % subjects.length];
+
+                    newPlan.push({
+                        id: Utils.id(),
+                        type: 'study',
+                        start: Utils.minToTime(currM),
+                        end: Utils.minToTime(currM + BLOCK_SIZE),
+                        title: sub.name,
+                        completed: false
+                    });
+
+                    currM += BLOCK_SIZE;
+                    poolIdx++;
+
+                    // Break (10 mins)
+                    if (currM + 10 < endM) {
+                        newPlan.push({
+                            type: 'break',
+                            start: Utils.minToTime(currM),
+                            end: Utils.minToTime(currM + 10),
+                            title: 'Break',
+                            completed: true
+                        });
+                        currM += 10;
+                    }
+                }
+
+                // Add Wind Down Block (Visual indication only)
+                if (windDown > 0 && endM < bedM) {
+                    newPlan.push({
+                        type: 'break',
+                        start: Utils.minToTime(endM),
+                        end: Utils.minToTime(bedM),
+                        title: 'Wind Down / Relax',
+                        completed: true
+                    });
+                }
+
+                currentUser.data.plans[today] = newPlan;
+                app.saveData();
+                ui.renderTimeline(newPlan);
+            },
+
+            loadDailyPlan: () => {
+                const today = Utils.getToday();
+                if (!currentUser.data.plans[today]) {
+                    app.regenerateSchedule();
+                } else {
+                    ui.renderTimeline(currentUser.data.plans[today]);
+                }
+            },
+
+            toggleTask: (id) => {
+                const plan = currentUser.data.plans[Utils.getToday()];
+                const task = plan.find(t => t.id === id);
+                if (task) {
+                    task.completed = !task.completed;
+                    app.saveData();
+                    ui.renderTimeline(plan); // Re-render to update progress
+                }
+            }
+        };
+
+        // --- UI ---
+        const ui = {
+            switchTab: (tabId) => {
+                document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+                document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+                // Find nav item by text (hacky) or index? Let's just simple
+                // Assuming order
+                const idx = ['home', 'school', 'subjects', 'settings'].indexOf(tabId);
+                document.querySelectorAll('.nav-item')[idx].classList.add('active');
+            },
+
+            renderSubjects: () => {
+                const cont = document.getElementById('subjects-list');
+                cont.innerHTML = '';
+                currentUser.data.subjects.forEach(s => {
+                    const el = document.createElement('div');
+                    el.className = 'glass-card p-4 flex justify-between items-center';
+                    el.innerHTML = `
+                        <div>
+                            <strong>${s.name}</strong> 
+                            <span style="font-size:0.8rem; color:var(--text-muted)">Priority: ${s.priority}</span>
+                        </div>
+                        <button class="btn btn-sm btn-danger" onclick="app.deleteSubject('${s.id}')">Delete</button>
+                    `;
+                    cont.appendChild(el);
+                });
+            },
+
+            renderSchoolGrid: () => {
+                const grid = document.getElementById('school-grid');
+                grid.innerHTML = ''; // Clear
+
+                const headers = ["", "Period", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+                headers.forEach(h => {
+                    const div = document.createElement('div');
+                    div.className = "timetable-head";
+                    div.innerText = h;
+                    grid.appendChild(div);
+                });
+
+                if (!currentUser.data.schoolSchedule) currentUser.data.schoolSchedule = [];
+
+                currentUser.data.schoolSchedule.forEach((row, rIdx) => {
+                    // Delete Button
+                    const delCell = document.createElement('div');
+                    delCell.className = "timetable-cell";
+                    delCell.innerHTML = `<span class="cell-action" onclick="app.deleteSchoolRow(${rIdx})" title="Delete Row">x</span>`;
+                    grid.appendChild(delCell);
+
+                    // Label Info Input
+                    const labelCell = document.createElement('div');
+                    labelCell.className = "timetable-cell";
+                    const labelIn = document.createElement('input');
+                    labelIn.className = "cell-input";
+                    labelIn.value = row.label;
+                    labelIn.onchange = (e) => app.updateSchoolLabel(rIdx, e.target.value);
+                    labelCell.appendChild(labelIn);
+                    grid.appendChild(labelCell);
+
+                    // 6 Days
+                    row.days.forEach((val, cIdx) => {
+                        const cell = document.createElement('div');
+                        cell.className = "timetable-cell";
+                        const input = document.createElement('input');
+                        input.className = "cell-input";
+                        input.placeholder = "-";
+                        input.value = val;
+                        input.onchange = (e) => app.updateSchoolCell(rIdx, cIdx, e.target.value);
+                        cell.appendChild(input);
+                        grid.appendChild(cell);
+                    });
+                });
+            },
+
+            renderTimeline: (plan) => {
+                const cont = document.getElementById('daily-timeline');
+                cont.innerHTML = '';
+                let completedCount = 0;
+                let studyCount = 0;
+
+                // Sort by time
+                plan.sort((a, b) => Utils.timeToMin(a.start) - Utils.timeToMin(b.start));
+
+                plan.forEach(item => {
+                    const el = document.createElement('div');
+                    el.className = 'time-block';
+
+                    let extraHtml = '';
+                    if (item.type === 'study') {
+                        studyCount++;
+                        if (item.completed) completedCount++;
+                        extraHtml = `<button class="btn btn-sm ${item.completed ? 'btn' : 'btn-outline'}" 
+                            style="position:absolute; right:1rem; top:50%; transform:translateY(-50%)"
+                            onclick="app.toggleTask('${item.id}')">${item.completed ? 'Done' : 'Mark Done'}</button>`;
+                    }
+
+                    el.innerHTML = `
+                        <div class="time-left">${Utils.formatTime(item.start)}</div>
+                        <div class="time-card ${item.type}">
+                            <h3>${item.title}</h3>
+                            <small>${Utils.formatTime(item.start)} - ${Utils.formatTime(item.end)}</small>
+                            ${extraHtml}
+                        </div>
+                    `;
+                    cont.appendChild(el);
+                });
+
+                // Update Progress Bar
+                const pct = studyCount === 0 ? 0 : (completedCount / studyCount) * 100;
+                document.getElementById('progress-bar').style.width = `${pct}%`;
+            },
+
+            showAddSubjectModal: () => {
+                ui.showModal('Add Subject', `
+                    <div class="input-group">
+                        <label>Subject Name</label>
+                        <input type="text" id="new-sub-name">
+                    </div>
+                    <div class="input-group">
+                        <label>Exam Date</label>
+                        <input type="date" id="new-sub-date">
+                    </div>
+                    <div class="input-group">
+                        <label>Priority (1 = Normal, 3 = Urgent)</label>
+                        <select id="new-sub-prio">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </div>
+                `, () => {
+                    const name = document.getElementById('new-sub-name').value;
+                    const date = document.getElementById('new-sub-date').value;
+                    const prio = document.getElementById('new-sub-prio').value;
+                    if (name) {
+                        app.addSubject(name, date, prio);
+                        ui.closeModal();
+                    }
+                });
+            },
+
+            modalConfirmAction: null,
+            showModal: (title, html, onConfirm) => {
+                document.getElementById('modal-title').innerText = title;
+                document.getElementById('modal-body').innerHTML = html;
+                ui.modalConfirmAction = onConfirm;
+                document.getElementById('modal-overlay').classList.add('active');
+            },
+            closeModal: () => document.getElementById('modal-overlay').classList.remove('active')
+        };
+
+        document.getElementById('modal-confirm-btn').onclick = () => {
+            if (ui.modalConfirmAction) ui.modalConfirmAction();
+        };
+
+        // Init
+        window.onload = auth.init;
+    </script>
+</body>
+
+</html>
